@@ -1,35 +1,38 @@
 #  ___________________
 #  Import LIBRARIES
-from typing import Any
-from fastapi import FastAPI, status
+from fastapi import status, APIRouter
 from fastapi.exceptions import HTTPException
-from pydantic import BaseModel
-import books_db
-import schema
-from schema import Book_Update
+
 #  Import FILES
+import src.books.books_db as books_db
+import src.books.schema as schema
 #  ___________________
 
+book_router = APIRouter
 
-app = FastAPI()
+
+book_router.get("/", response_model=list[schema.Book] | None)
+# book_router.get("/books", response_model=list[schema.Book] | None)
 
 
-@app.get("/books", response_model=list[schema.Book] | None)
-# @app.get("/books", response_model=List[books_db.Book])
 async def get_all_books() -> list[schema.Book] | None:
-    # async def get_all_books() -> list[dict[str, Any]]:
     return books_db.books
 
 
-@app.post("/books", status_code=status.HTTP_201_CREATED)
+book_router.post("/", status_code=status.HTTP_201_CREATED)
+# book_router.post("/books", status_code=status.HTTP_201_CREATED)
+
+
 async def create_a_book(book_data: schema.Book) -> schema.Book:
     new_book: schema.Book = book_data.model_dump()
     books_db.books.append(new_book)
     return new_book
-    # pass
 
 
-@app.get("/book/{book_id}")
+book_router.get("//{book_id}")
+# book_router.get("/book/{book_id}")
+
+
 async def get_book(book_id: int) -> schema.Book | None:
     # if book: schema.Book == None:
     #     return {"message": "Please insert a valid id for a book"}
@@ -41,7 +44,10 @@ async def get_book(book_id: int) -> schema.Book | None:
     # pass
 
 
-@app.patch("/book/{book_id}", response_model=Book_Update)
+book_router.patch("/{book_id}", response_model=schema.Book_Update)
+# book_router.patch("/book/{book_id}", response_model=schema.Book_Update)
+
+
 async def update_book(
     book_id: int, book_update_data: schema.Book_Update
 ) -> schema.Book:
@@ -77,7 +83,10 @@ async def update_book(
     # pass
 
 
-@app.delete("/book/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+book_router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+# book_router.delete("/book/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+
+
 async def delete_book(book_id: int) -> None:  # -> list[schema.Book] | None:
     for book in books_db.books:
         # print(f"book: {book}")
@@ -89,11 +98,3 @@ async def delete_book(book_id: int) -> None:  # -> list[schema.Book] | None:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found!")
 
     # pass
-
-
-# def main():
-#     print("Hello from bookly!")
-
-
-# if __name__ == "__main__":
-#     main()

@@ -1,6 +1,6 @@
 #  Import LIBRARIES
 # from typing import Any
-import schema
+import src.books.schema as schema
 #  Import FILES
 #  ___________________
 
